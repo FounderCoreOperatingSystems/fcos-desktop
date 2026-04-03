@@ -1,0 +1,412 @@
+/* ── FCOS Specialist Agent Network — Workspace UI (Phase 12C) ───────────────── */
+:root {
+  --cw-bg:      #07070f;
+  --cw-surface: #0f0f1a;
+  --cw-card:    #13131f;
+  --cw-border:  rgba(108, 99, 255, 0.18);
+  --cw-accent:  #6c63ff;
+  --cw-gold:    #d4af37;
+  --cw-text:    #f0eeff;
+  --cw-muted:   #7a74aa;
+  --cw-radius:  14px;
+}
+
+/* ── Launcher (Add Specialist button) ───────────────────────────────────────── */
+.cw-launcher {
+  position: fixed;
+  bottom: 64px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af37, #b8942a);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+  transition: transform 0.18s, box-shadow 0.18s;
+  z-index: 9000;
+}
+.cw-launcher:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 6px 28px rgba(212, 175, 55, 0.6);
+}
+.cw-launcher:active { transform: scale(0.96); }
+.cw-launcher-icon {
+  font-size: 1.7rem;
+  font-weight: 300;
+  color: #0a0a0f;
+  line-height: 1;
+  margin-top: -2px;
+}
+
+/* Open Platform button */
+.cw-open-platform {
+  position: fixed;
+  bottom: 64px;
+  right: 88px;
+  background: rgba(108, 99, 255, 0.15);
+  border: 1px solid rgba(108, 99, 255, 0.3);
+  border-radius: 24px;
+  color: var(--cw-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  z-index: 9000;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+.cw-open-platform:hover {
+  background: rgba(108, 99, 255, 0.28);
+  border-color: rgba(108, 99, 255, 0.55);
+}
+
+/* ── Dialog overlay ─────────────────────────────────────────────────────────── */
+.cw-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 9100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cw-fade-in 0.15s ease;
+  padding: 20px;
+}
+.cw-overlay.cw-hidden { display: none; }
+
+@keyframes cw-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.cw-dialog {
+  background: var(--cw-surface);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: 540px;
+  max-width: 96vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(212, 175, 55, 0.06);
+  animation: cw-slide-up 0.2s ease;
+}
+.cw-dialog::-webkit-scrollbar { width: 4px; }
+.cw-dialog::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+@keyframes cw-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cw-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.cw-dialog-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--cw-text);
+}
+.cw-dialog-close {
+  background: none;
+  border: none;
+  color: var(--cw-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.cw-dialog-close:hover { color: var(--cw-text); background: rgba(255,255,255,0.06); }
+
+.cw-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cw-muted);
+  margin-bottom: 10px;
+}
+
+/* ── Agent grid ─────────────────────────────────────────────────────────────── */
+.cw-bot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+/* Orchestrator card spans full row */
+.cw-bot-card--wide {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+}
+.cw-bot-card--wide .cw-bot-card-top { grid-row: 1; grid-column: 1; }
+.cw-bot-card--wide .cw-bot-badges   { grid-row: 1; grid-column: 2; justify-self: end; align-self: center; }
+.cw-bot-card--wide .cw-bot-name     { grid-row: 2; grid-column: 1; }
+.cw-bot-card--wide .cw-bot-desc     { grid-row: 2; grid-column: 2; align-self: start; }
+
+.cw-bot-card {
+  background: var(--cw-card);
+  border: 1.5px solid var(--cw-border);
+  border-left: 4px solid var(--bot-colour, #6c63ff);
+  border-radius: 10px;
+  padding: 11px 12px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+  text-align: left;
+}
+.cw-bot-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-1px);
+}
+.cw-bot-card.selected {
+  border-color: var(--bot-colour, #6c63ff);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 0 0 1px var(--bot-colour, #6c63ff);
+}
+
+.cw-bot-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.cw-bot-icon { font-size: 1.15rem; }
+
+.cw-bot-badges { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.cw-role-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 100px;
+  background: rgba(108, 99, 255, 0.18);
+  color: #a78bfa;
+  border: 1px solid rgba(108, 99, 255, 0.3);
+}
+.cw-role-badge--orch {
+  background: rgba(212, 175, 55, 0.18);
+  color: #d4af37;
+  border-color: rgba(212, 175, 55, 0.4);
+}
+.cw-live-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 100px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.cw-planned-badge {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--cw-muted);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.cw-bot-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--cw-text);
+  margin-bottom: 3px;
+}
+.cw-bot-desc {
+  font-size: 0.72rem;
+  color: var(--cw-muted);
+  line-height: 1.4;
+}
+
+/* ── Title input ────────────────────────────────────────────────────────────── */
+.cw-title-input {
+  width: 100%;
+  background: var(--cw-card);
+  border: 1.5px solid var(--cw-border);
+  border-radius: 8px;
+  color: var(--cw-text);
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: 'Inter', -apple-system, sans-serif;
+  margin-bottom: 18px;
+}
+.cw-title-input:focus { border-color: rgba(212, 175, 55, 0.45); }
+.cw-title-input::placeholder { color: var(--cw-muted); }
+
+/* ── Colour swatches ────────────────────────────────────────────────────────── */
+.cw-colour-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.cw-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+}
+.cw-swatch:hover { transform: scale(1.2); }
+.cw-swatch.selected {
+  border-color: #fff;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.28);
+}
+.cw-swatch--custom {
+  background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+  position: relative;
+  overflow: hidden;
+}
+.cw-swatch--custom input[type="color"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* ── Open button ────────────────────────────────────────────────────────────── */
+.cw-open-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d4af37, #b8942a);
+  border: none;
+  color: #0a0a0f;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s;
+}
+.cw-open-btn:hover { opacity: 0.88; transform: scale(0.99); }
+.cw-open-btn:active { transform: scale(0.97); }
+
+/* ── Taskbar ────────────────────────────────────────────────────────────────── */
+.cw-taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: rgba(7, 7, 15, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--cw-border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  z-index: 8900;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.cw-taskbar::-webkit-scrollbar { height: 3px; }
+.cw-taskbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+.cw-taskbar-empty {
+  font-size: 0.72rem;
+  color: #2a2550;
+  flex: 1;
+  text-align: center;
+  pointer-events: none;
+}
+.cw-taskbar-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--cw-card);
+  border: 1px solid var(--cw-border);
+  border-left: 3px solid var(--tab-colour, #6c63ff);
+  border-radius: 8px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.12s;
+  white-space: nowrap;
+  max-width: 180px;
+  flex-shrink: 0;
+}
+.cw-taskbar-tab:hover { background: rgba(255,255,255,0.06); }
+.cw-taskbar-tab-label {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--cw-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+.cw-taskbar-tab-close {
+  background: none;
+  border: none;
+  color: var(--cw-muted);
+  font-size: 0.68rem;
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 3px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.12s;
+}
+.cw-taskbar-tab-close:hover { color: var(--cw-text); }
+
+/* ── Workspace hub background ───────────────────────────────────────────────── */
+.cw-hub {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-bottom: 80px;
+  background:
+    radial-gradient(ellipse 600px 400px at 50% 40%, rgba(212, 175, 55, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 900px 500px at 50% 65%, rgba(108, 99, 255, 0.05) 0%, transparent 70%);
+}
+.cw-hub-logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #d4af37, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cw-hub-sub {
+  font-size: 0.88rem;
+  color: var(--cw-muted);
+  text-align: center;
+  max-width: 340px;
+  line-height: 1.6;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+.cw-hub-hint {
+  font-size: 0.75rem;
+  color: #2d2855;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
