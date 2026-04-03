@@ -3,7 +3,7 @@
 
 const CHAT_BOT_URL = 'https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder';
 const FCOS_URL     = 'https://www.fcosthinktank.site';
-const STORAGE_KEY  = 'cw:windows:v1';
+const STORAGE_KEY  = 'cw:windows:v2';
 
 const AGENTS = [
   {
@@ -38,7 +38,7 @@ const AGENTS = [
   },
   {
     id:     'frontend',
-    label:  'Front End Agent',
+    label:  'Front End',
     icon:   '🎨',
     colour: '#a78bfa',
     role:   'Specialist',
@@ -57,28 +57,18 @@ const AGENTS = [
     status: 'planned',
   },
   {
-    id:     'store',
-    label:  'Store & Economy',
-    icon:   '🏪',
+    id:     'sprint',
+    label:  'Sprint Tracker',
+    icon:   '🏃',
     colour: '#14b8a6',
     role:   'Specialist',
-    desc:   'Store model, affiliate economy, creator strategy, listing operations.',
-    url:    CHAT_BOT_URL,
-    status: 'planned',
-  },
-  {
-    id:     'syd',
-    label:  'Syd in Motion',
-    icon:   '🩰',
-    colour: '#ec4899',
-    role:   'Specialist',
-    desc:   'Creative direction, brand voice, content strategy, coaching platform.',
+    desc:   'Tasks, progress, what\'s done, what\'s next. Keep the build moving.',
     url:    CHAT_BOT_URL,
     status: 'planned',
   },
   {
     id:     'custom',
-    label:  'Custom Agent',
+    label:  'Custom',
     icon:   '✨',
     colour: '#ef4444',
     role:   'Specialist',
@@ -199,11 +189,11 @@ const ChatWorkspace = {
 
   _nextX() {
     const n = this.windows.filter(w => !w.minimised).length;
-    return 80 + (n % 8) * 40;
+    return 80 + (n % 10) * 30;
   },
   _nextY() {
     const n = this.windows.filter(w => !w.minimised).length;
-    return 80 + (n % 6) * 40;
+    return 80 + (n % 8) * 30;
   },
 
   // ── Minimise / Restore ────────────────────────────────────────────────────
@@ -374,7 +364,7 @@ const ChatWorkspace = {
         </div>
 
         <button class="cw-open-btn" onclick="ChatWorkspace._submitDialog()">
-          Open Specialist →
+          Open Chat →
         </button>
       </div>
     `;
