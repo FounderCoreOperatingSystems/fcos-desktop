@@ -107,7 +107,13 @@ const ChatWorkspace = {
     // Restore non-minimised windows from previous session
     const toRestore = this.windows.filter(w => !w.minimised);
     for (const w of toRestore) {
-      await this._invokeOpen(w).catch(e => console.warn('restore window failed:', w.id, e));
+      try {
+        await this._invokeOpen(w);
+      } catch (e) {
+        console.warn('restore window failed, removing:', w.id, e);
+        this.windows = this.windows.filter(x => x.id !== w.id);
+        this._saveState();
+      }
     }
 
     // Auto-open FCOS Platform on very first launch
@@ -181,7 +187,7 @@ const ChatWorkspace = {
 
   // ── Open specialist ───────────────────────────────────────────────────────
   async openChat(config) {
-    const id = config.id ?? (config.agentId + ':' + Date.now());
+    const id = config.id ?? (config.agentId + '-' + Date.now());
     const x  = config.x ?? this._nextX();
     const y  = config.y ?? this._nextY();
     this._lastX = x; this._lastY = y;
