@@ -96,6 +96,7 @@ const ChatWorkspace = {
 
   // ── Init ──────────────────────────────────────────────────────────────────
   async init() {
+    await this._waitForTauri();
     this._loadState();
     this._renderHub();
     this._renderLauncher();
@@ -105,23 +106,39 @@ const ChatWorkspace = {
     // Restore non-minimised windows from previous session
     const toRestore = this.windows.filter(w => !w.minimised);
     for (const w of toRestore) {
-      await this._invokeOpen(w).catch(() => {});
+      await this._invokeOpen(w).catch(e => console.warn('restore window failed:', w.id, e));
     }
 
     // Auto-open FCOS Platform on very first launch
     if (this.windows.length === 0) {
       await this.openChat({
-        id:     'fcos-platform',
+        id:      'fcos-platform',
         agentId: 'fcos-platform',
-        title:  'FCOS Platform',
-        colour: '#6c63ff',
-        url:    FCOS_URL,
-        width:  1280,
-        height: 800,
-        x:      40,
-        y:      40,
+        title:   'FCOS Platform',
+        colour:  '#d4af37',
+        url:     FCOS_URL,
+        width:   1280,
+        height:  800,
+        x:       40,
+        y:       40,
       });
     }
+  },
+
+  // Wait for Tauri IPC bridge — polls up to 3s, resolves immediately in browser
+  _waitForTauri() {
+    if (typeof window.__TAURI__ !== 'undefined') return Promise.resolve();
+    return new Promise(resolve => {
+      const deadline = Date.now() + 3000;
+      const poll = () => {
+        if (typeof window.__TAURI__ !== 'undefined' || Date.now() > deadline) {
+          resolve();
+        } else {
+          setTimeout(poll, 50);
+        }
+      };
+      setTimeout(poll, 50);
+    });
   },
 
   // ── Persistence ───────────────────────────────────────────────────────────
@@ -183,7 +200,14 @@ const ChatWorkspace = {
     if (idx >= 0) { this.windows[idx] = entry; } else { this.windows.push(entry); }
 
     this._saveState();
-    await this._invokeOpen(entry).catch(e => console.error('open_chat_window:', e));
+    try {
+      await this._invokeOpen(entry);
+    } catch (e) {
+      console.error('openChat failed for', id, ':', e);
+      // Remove from state if window failed to open
+      this.windows = this.windows.filter(w => w.id !== id);
+      this._saveState();
+    }
     this._renderTaskbar();
   },
 
@@ -260,7 +284,7 @@ const ChatWorkspace = {
       id:     'fcos-platform',
       agentId: 'fcos-platform',
       title:  'FCOS Platform',
-      colour: '#6c63ff',
+      colour: '#d4af37',
       url:    FCOS_URL,
       x: 40, y: 40, width: 1280, height: 800,
     });

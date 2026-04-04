@@ -12,8 +12,8 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       height: 100%;
-      background: #07070f;
-      color: #f0eeff;
+      background: #000000;
+      color: #f5f0e8;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
@@ -23,9 +23,20 @@
   <!-- ChatWorkspace mounts hub, launcher, taskbar, and dialog into body -->
   <script src="chat-workspace.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      ChatWorkspace.init().catch(err => console.error('ChatWorkspace init:', err));
-    });
+    // Wait for Tauri IPC bridge before init — avoids blank windows on slow starts
+    function startWhenReady() {
+      if (typeof ChatWorkspace === 'undefined') {
+        console.error('ChatWorkspace not loaded');
+        return;
+      }
+      ChatWorkspace.init().catch(err => console.error('ChatWorkspace init failed:', err));
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startWhenReady);
+    } else {
+      startWhenReady();
+    }
   </script>
 </body>
 </html>

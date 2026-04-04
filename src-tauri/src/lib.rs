@@ -34,6 +34,7 @@ fn open_chatgpt_window(app: tauri::AppHandle) -> Result<(), String> {
     .title("FCOS Symbiote — ChatGPT")
     .inner_size(480.0, 700.0)
     .position(820.0, 80.0)
+    .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
     .build()
     .map_err(|e| e.to_string())?;
     Ok(())
@@ -66,6 +67,7 @@ fn open_chat_window(
         .inner_size(width, height)
         .position(x, y)
         .min_inner_size(300.0, 400.0)
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
         .build()
         .map_err(|e| e.to_string())?;
 

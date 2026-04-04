@@ -1,13 +1,13 @@
 /* ── FCOS Specialist Agent Network — Workspace UI (Phase 12C) ───────────────── */
 :root {
-  --cw-bg:      #07070f;
-  --cw-surface: #0f0f1a;
-  --cw-card:    #13131f;
-  --cw-border:  rgba(108, 99, 255, 0.18);
-  --cw-accent:  #6c63ff;
+  --cw-bg:      #000000;
+  --cw-surface: #0d0d0d;
+  --cw-card:    #111111;
+  --cw-border:  rgba(212, 175, 55, 0.18);
+  --cw-accent:  #d4af37;
   --cw-gold:    #d4af37;
-  --cw-text:    #f0eeff;
-  --cw-muted:   #7a74aa;
+  --cw-text:    #f5f0e8;
+  --cw-muted:   #7a7060;
   --cw-radius:  14px;
 }
 
@@ -47,8 +47,8 @@
   position: fixed;
   bottom: 64px;
   right: 88px;
-  background: rgba(108, 99, 255, 0.15);
-  border: 1px solid rgba(108, 99, 255, 0.3);
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 24px;
   color: var(--cw-text);
   font-size: 0.8rem;
@@ -61,8 +61,8 @@
   font-family: 'Inter', -apple-system, sans-serif;
 }
 .cw-open-platform:hover {
-  background: rgba(108, 99, 255, 0.28);
-  border-color: rgba(108, 99, 255, 0.55);
+  background: rgba(212, 175, 55, 0.22);
+  border-color: rgba(212, 175, 55, 0.55);
 }
 
 /* ── Dialog overlay ─────────────────────────────────────────────────────────── */
@@ -192,9 +192,9 @@
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 100px;
-  background: rgba(108, 99, 255, 0.18);
-  color: #a78bfa;
-  border: 1px solid rgba(108, 99, 255, 0.3);
+  background: rgba(212, 175, 55, 0.12);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
 }
 .cw-role-badge--orch {
   background: rgba(212, 175, 55, 0.18);
@@ -331,7 +331,7 @@
 
 .cw-taskbar-empty {
   font-size: 0.72rem;
-  color: #2a2550;
+  color: #2a2214;
   flex: 1;
   text-align: center;
   pointer-events: none;
@@ -385,8 +385,8 @@
   gap: 14px;
   padding-bottom: 80px;
   background:
-    radial-gradient(ellipse 600px 400px at 50% 40%, rgba(212, 175, 55, 0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 900px 500px at 50% 65%, rgba(108, 99, 255, 0.05) 0%, transparent 70%);
+    radial-gradient(ellipse 600px 400px at 50% 40%, rgba(212, 175, 55, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 900px 500px at 50% 65%, rgba(212, 175, 55, 0.03) 0%, transparent 70%);
 }
 .cw-hub-logo {
   font-family: 'Poppins', sans-serif;
@@ -407,6 +407,6 @@
 }
 .cw-hub-hint {
   font-size: 0.75rem;
-  color: #2d2855;
+  color: #2a2214;
   font-family: 'Inter', -apple-system, sans-serif;
 }
