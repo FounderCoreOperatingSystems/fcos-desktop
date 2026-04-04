@@ -6,37 +6,31 @@
   <title>FCOS Symbiote</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="chat-workspace.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       height: 100%;
-      background: #000000;
-      color: #f5f0e8;
+      background: #060610;
+      color: #f0ecdf;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
+      overflow: hidden;
     }
   </style>
 </head>
 <body>
-  <!-- ChatWorkspace mounts hub, launcher, taskbar, and dialog into body -->
   <script src="chat-workspace.js"></script>
   <script>
-    // Wait for Tauri IPC bridge before init — avoids blank windows on slow starts
-    function startWhenReady() {
-      if (typeof ChatWorkspace === 'undefined') {
-        console.error('ChatWorkspace not loaded');
-        return;
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof ChatWorkspace !== 'undefined') {
+        ChatWorkspace.init().catch(function(err) {
+          console.error('ChatWorkspace init failed:', err);
+          document.body.innerHTML += '<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#ef4444;font-size:14px;padding:24px;text-align:center">Init failed: ' + (err.message || err) + '</div>';
+        });
       }
-      ChatWorkspace.init().catch(err => console.error('ChatWorkspace init failed:', err));
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startWhenReady);
-    } else {
-      startWhenReady();
-    }
+    });
   </script>
 </body>
 </html>
