@@ -3,7 +3,8 @@
 
 const CHAT_BOT_URL = 'https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder';
 const FCOS_URL     = 'https://www.fcosthinktank.site';
-const STORAGE_KEY  = 'cw:windows:v2';
+const STORAGE_KEY  = 'cw:windows:v3';
+const APP_VERSION  = '1.0.8';
 
 const AGENTS = [
   {
@@ -97,6 +98,16 @@ const ChatWorkspace = {
   // ── Init ──────────────────────────────────────────────────────────────────
   async init() {
     await this._waitForTauri();
+
+    // Diagnostics — visible in dev tools + toast on failure
+    const invoke = this._getTauriInvoke();
+    console.log('[FCOS] Tauri IPC:', invoke ? 'available' : 'NOT FOUND',
+      '| __TAURI__:', typeof window.__TAURI__,
+      '| __TAURI_INTERNALS__:', typeof window.__TAURI_INTERNALS__);
+    if (!invoke) {
+      this._toast('Tauri IPC not detected — windows cannot open. Reinstall may be needed.', true);
+    }
+
     this._loadState();
     this._renderHub();
     this._renderLauncher();
@@ -134,11 +145,11 @@ const ChatWorkspace = {
 
   // Wait for Tauri IPC bridge — polls up to 3s, resolves immediately in browser
   _waitForTauri() {
-    if (typeof window.__TAURI__ !== 'undefined') return Promise.resolve();
+    if (this._getTauriInvoke()) return Promise.resolve();
     return new Promise(resolve => {
       const deadline = Date.now() + 3000;
       const poll = () => {
-        if (typeof window.__TAURI__ !== 'undefined' || Date.now() > deadline) {
+        if (this._getTauriInvoke() || Date.now() > deadline) {
           resolve();
         } else {
           setTimeout(poll, 50);
@@ -146,6 +157,17 @@ const ChatWorkspace = {
       };
       setTimeout(poll, 50);
     });
+  },
+
+  // Resolve the Tauri invoke function — works with or without @tauri-apps/api
+  _getTauriInvoke() {
+    // Tauri v2 with @tauri-apps/api bundled
+    if (window.__TAURI__?.core?.invoke) return window.__TAURI__.core.invoke;
+    // Tauri v2 withGlobalTauri (no npm API package)
+    if (window.__TAURI_INTERNALS__?.invoke) return window.__TAURI_INTERNALS__.invoke;
+    // Tauri v1 fallback
+    if (window.__TAURI__?.invoke) return window.__TAURI__.invoke;
+    return null;
   },
 
   // ── Persistence ───────────────────────────────────────────────────────────
@@ -164,8 +186,10 @@ const ChatWorkspace = {
 
   // ── Tauri invoke ──────────────────────────────────────────────────────────
   _invoke(cmd, args) {
-    if (window.__TAURI__) return window.__TAURI__.core.invoke(cmd, args);
-    return Promise.resolve(); // browser preview no-op
+    const invoke = this._getTauriInvoke();
+    if (invoke) return invoke(cmd, args);
+    console.warn('[FCOS] No Tauri IPC available — running in browser mode');
+    return Promise.resolve();
   },
 
   _invokeOpen(w) {
@@ -211,7 +235,7 @@ const ChatWorkspace = {
       await this._invokeOpen(entry);
     } catch (e) {
       console.error('openChat failed for', id, ':', e);
-      // Remove from state if window failed to open
+      this._toast('Window failed: ' + (e?.message || e || 'unknown error'), true);
       this.windows = this.windows.filter(w => w.id !== id);
       this._saveState();
     }
@@ -301,19 +325,19 @@ const ChatWorkspace = {
   // ── DOM: Check for updates button ─────────────────────────────────────────
   _renderUpdateBtn() {
     if (document.getElementById('cw-update-btn')) return;
-    if (typeof window.__TAURI__ === 'undefined') return; // browser preview
+    if (!this._getTauriInvoke()) return; // browser preview
     const btn = document.createElement('button');
     btn.id = 'cw-update-btn';
     btn.className = 'cw-update-btn';
-    btn.textContent = '↑ Check for updates';
+    btn.textContent = '↑ v' + APP_VERSION + ' — Check for updates';
     btn.onclick = async () => {
       btn.textContent = 'Checking…';
       btn.disabled = true;
       try {
-        const msg = await window.__TAURI__.core.invoke('check_for_updates');
+        const msg = await this._invoke('check_for_updates');
         btn.textContent = msg;
         setTimeout(() => {
-          btn.textContent = '↑ Check for updates';
+          btn.textContent = '↑ v' + APP_VERSION + ' — Check for updates';
           btn.disabled = false;
         }, 4000);
       } catch (e) {
@@ -486,6 +510,21 @@ const ChatWorkspace = {
     return String(str || '')
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  },
+
+  _toast(msg, isError) {
+    let container = document.getElementById('cw-toasts');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'cw-toasts';
+      container.style.cssText = 'position:fixed;top:16px;right:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;';
+      document.body.appendChild(container);
+    }
+    const el = document.createElement('div');
+    el.style.cssText = `padding:10px 16px;border-radius:8px;font-size:13px;color:#f5f0e8;max-width:340px;background:${isError ? '#7f1d1d' : '#1a1a2e'};border:1px solid ${isError ? '#ef4444' : '#d4af37'};`;
+    el.textContent = msg;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 5000);
   },
 };
 
