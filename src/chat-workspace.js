@@ -4,7 +4,7 @@
 const CHAT_BOT_URL = 'https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder';
 const FCOS_URL     = 'https://www.fcosthinktank.site';
 const STORAGE_KEY  = 'cw:windows:v4';
-const APP_VERSION  = '1.0.10';
+const APP_VERSION  = '1.0.11';
 
 const AGENTS = [
   {
@@ -104,6 +104,13 @@ const ChatWorkspace = {
   },
 
   async _invoke(cmd, args) {
+    const path =
+      window.__TAURI__?.core?.invoke    ? 'tauri.core' :
+      window.__TAURI_INTERNALS__?.invoke ? 'internals' :
+      window.__TAURI__?.invoke           ? 'tauri.v1' : null;
+
+    console.log('[FCOS] invoke:', cmd, '| path:', path || 'NONE');
+
     try {
       if (window.__TAURI__?.core?.invoke) {
         return await window.__TAURI__.core.invoke(cmd, args);
