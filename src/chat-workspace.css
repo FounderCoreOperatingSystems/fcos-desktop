@@ -65,6 +65,25 @@
   border-color: rgba(212, 175, 55, 0.55);
 }
 
+/* Check for updates button */
+.cw-update-btn {
+  position: fixed;
+  bottom: 64px;
+  left: 16px;
+  background: transparent;
+  border: none;
+  color: var(--cw-muted);
+  font-size: 0.7rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 9000;
+  transition: color 0.15s;
+}
+.cw-update-btn:hover { color: var(--cw-text); }
+.cw-update-btn:disabled { cursor: default; }
+
 /* ── Dialog overlay ─────────────────────────────────────────────────────────── */
 .cw-overlay {
   position: fixed;

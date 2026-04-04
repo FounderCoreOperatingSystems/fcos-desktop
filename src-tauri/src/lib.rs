@@ -1,6 +1,8 @@
 use tauri::Manager;
 use std::collections::HashMap;
 use std::sync::Mutex;
+use tauri::process::restart;
+use tauri_plugin_updater::UpdaterExt;
 
 const CHATGPT_URL: &str =
     "https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder";
@@ -112,6 +114,27 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+// ── Auto-updater command ───────────────────────────────────────────────────────
+
+#[tauri::command]
+async fn check_for_updates(app: tauri::AppHandle) -> Result<String, String> {
+    let updater = app.updater().map_err(|e| e.to_string())?;
+    match updater.check().await {
+        Ok(Some(update)) => {
+            let version = update.version.clone();
+            // Download and install in background
+            tauri::async_runtime::spawn(async move {
+                let _ = update.download_and_install(|_, _| {}, || {}).await;
+                // Restart after install
+                restart(&app.env());
+            });
+            Ok(format!("Updating to v{}…", version))
+        }
+        Ok(None) => Ok("You're on the latest version.".to_string()),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
 // ── Entry point ───────────────────────────────────────────────────────────────
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -121,6 +144,8 @@ pub fn run() {
             chat_windows: HashMap::new(),
         }))
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             greet,
             open_chatgpt_window,
@@ -128,6 +153,7 @@ pub fn run() {
             list_chat_windows,
             close_chat_window,
             focus_chat_window,
+            check_for_updates,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -102,6 +102,7 @@ const ChatWorkspace = {
     this._renderLauncher();
     this._renderTaskbar();
     this._renderOpenPlatformBtn();
+    this._renderUpdateBtn();
 
     // Restore non-minimised windows from previous session
     const toRestore = this.windows.filter(w => !w.minimised);
@@ -288,6 +289,32 @@ const ChatWorkspace = {
       url:    FCOS_URL,
       x: 40, y: 40, width: 1280, height: 800,
     });
+    document.body.appendChild(btn);
+  },
+
+  // ── DOM: Check for updates button ─────────────────────────────────────────
+  _renderUpdateBtn() {
+    if (document.getElementById('cw-update-btn')) return;
+    if (typeof window.__TAURI__ === 'undefined') return; // browser preview
+    const btn = document.createElement('button');
+    btn.id = 'cw-update-btn';
+    btn.className = 'cw-update-btn';
+    btn.textContent = '↑ Check for updates';
+    btn.onclick = async () => {
+      btn.textContent = 'Checking…';
+      btn.disabled = true;
+      try {
+        const msg = await window.__TAURI__.core.invoke('check_for_updates');
+        btn.textContent = msg;
+        setTimeout(() => {
+          btn.textContent = '↑ Check for updates';
+          btn.disabled = false;
+        }, 4000);
+      } catch (e) {
+        btn.textContent = 'Update check failed';
+        btn.disabled = false;
+      }
+    };
     document.body.appendChild(btn);
   },
 
