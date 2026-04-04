@@ -4,7 +4,7 @@
 const CHAT_BOT_URL = 'https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder';
 const FCOS_URL     = 'https://www.fcosthinktank.site';
 const STORAGE_KEY  = 'cw:windows:v3';
-const APP_VERSION  = '1.0.8';
+const APP_VERSION  = '1.0.9';
 
 const AGENTS = [
   {
@@ -160,13 +160,14 @@ const ChatWorkspace = {
   },
 
   // Resolve the Tauri invoke function — works with or without @tauri-apps/api
+  // IMPORTANT: must return a bound function so `this` context is preserved
   _getTauriInvoke() {
     // Tauri v2 with @tauri-apps/api bundled
-    if (window.__TAURI__?.core?.invoke) return window.__TAURI__.core.invoke;
+    if (window.__TAURI__?.core?.invoke) return window.__TAURI__.core.invoke.bind(window.__TAURI__.core);
     // Tauri v2 withGlobalTauri (no npm API package)
-    if (window.__TAURI_INTERNALS__?.invoke) return window.__TAURI_INTERNALS__.invoke;
+    if (window.__TAURI_INTERNALS__?.invoke) return window.__TAURI_INTERNALS__.invoke.bind(window.__TAURI_INTERNALS__);
     // Tauri v1 fallback
-    if (window.__TAURI__?.invoke) return window.__TAURI__.invoke;
+    if (window.__TAURI__?.invoke) return window.__TAURI__.invoke.bind(window.__TAURI__);
     return null;
   },
 
@@ -185,11 +186,18 @@ const ChatWorkspace = {
   },
 
   // ── Tauri invoke ──────────────────────────────────────────────────────────
-  _invoke(cmd, args) {
+  async _invoke(cmd, args) {
     const invoke = this._getTauriInvoke();
-    if (invoke) return invoke(cmd, args);
-    console.warn('[FCOS] No Tauri IPC available — running in browser mode');
-    return Promise.resolve();
+    if (!invoke) {
+      console.warn('[FCOS] No Tauri IPC available — running in browser mode');
+      return;
+    }
+    try {
+      return await invoke(cmd, args);
+    } catch (e) {
+      console.error('[FCOS] IPC call failed:', cmd, e);
+      throw e;
+    }
   },
 
   _invokeOpen(w) {
