@@ -4,7 +4,7 @@
 const CHAT_BOT_URL = 'https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder';
 const FCOS_URL     = 'https://www.fcosthinktank.site/products/';
 const STORAGE_KEY  = 'cw:windows:v4';
-const APP_VERSION  = '1.0.13';
+const APP_VERSION  = '1.0.14';
 
 const FCOS_BUILD_URL  = 'https://chatgpt.com/g/g-69d19d899fd081918138517c4f13d9d3-fcos-build';
 const FCOS_BRAINZ_URL = 'https://chatgpt.com/g/g-69d1532825148191bddb2435d94256a5-fcos-brainz';
@@ -75,6 +75,83 @@ const AGENTS = [
     desc:   'Tasks, progress, what\'s done, what\'s next. Keep the build moving.',
     url:    CHAT_BOT_URL,
     image:  `${IMG_BASE}/thinktank-symbiote.jpg`,
+    status: 'planned',
+  },
+  {
+    id:     'orchestrator',
+    label:  'FCOS Orchestrator',
+    icon:   '🎵',
+    colour: '#94a3b8',
+    role:   'Operations',
+    desc:   'Task coordination — breaks intent into workstreams, directs specialists, synthesises results.',
+    url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/music-symbiote.jpg`,
+    status: 'planned',
+  },
+  {
+    id:     'marketing',
+    label:  'Marketing & Growth',
+    icon:   '📣',
+    colour: '#14b8a6',
+    role:   'Specialist',
+    desc:   'Content strategy, SEO, acquisition channels, campaign planning, growth intelligence.',
+    url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/marketing-symbiote.jpg`,
+    status: 'planned',
+  },
+  {
+    id:     'legal',
+    label:  'Legal & Compliance',
+    icon:   '⚖️',
+    colour: '#1e3a5f',
+    role:   'Specialist',
+    desc:   'Terms, GDPR, contracts, IP protection, regulatory guidance for founders.',
+    url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/legal-symbiote.jpg`,
+    status: 'planned',
+  },
+  {
+    id:     'sales',
+    label:  'Sales & CRM',
+    icon:   '🤝',
+    colour: '#ea580c',
+    role:   'Specialist',
+    desc:   'Pipeline management, outreach, proposals, CRM strategy, revenue intelligence.',
+    url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/sales-symbiote.jpg`,
+    status: 'planned',
+  },
+  {
+    id:     'people',
+    label:  'People & Team',
+    icon:   '👥',
+    colour: '#ec4899',
+    role:   'Specialist',
+    desc:   'Hiring, onboarding, org design, performance, team culture intelligence.',
+    url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/people-symbiote.jpg`,
+    status: 'planned',
+  },
+  {
+    id:     'social',
+    label:  'Social & Content',
+    icon:   '📱',
+    colour: '#f43f5e',
+    role:   'Specialist',
+    desc:   'Platform-specific content, copywriting, brand voice, community management.',
+    url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/social-symbiote.jpg`,
+    status: 'planned',
+  },
+  {
+    id:     'research',
+    label:  'Product & UX Research',
+    icon:   '🔍',
+    colour: '#06b6d4',
+    role:   'Specialist',
+    desc:   'User research, validation, feature prioritisation, product-market fit intelligence.',
+    url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/research-symbiote.jpg`,
     status: 'planned',
   },
   {
@@ -172,8 +249,8 @@ const ChatWorkspace = {
       this._toast('IPC smoke test failed: ' + (e?.message || e), true);
     }
 
-    // Restore windows
-    const toRestore = this.windows.filter(w => !w.minimised);
+    // Restore windows — skip non-embeddable URLs (chatgpt.com) to avoid phantom windows
+    const toRestore = this.windows.filter(w => !w.minimised && !w.url?.includes('chatgpt.com'));
     for (const w of toRestore) {
       try { await this._invokeOpen(w); } catch (e) {
         this.windows = this.windows.filter(x => x.id !== w.id);
@@ -181,14 +258,7 @@ const ChatWorkspace = {
       }
     }
 
-    // Auto-open FCOS Platform on first launch
-    if (this.windows.length === 0) {
-      await this.openChat({
-        id: 'fcos-platform', agentId: 'fcos-platform',
-        title: 'FCOS Platform', colour: '#d4af37', url: FCOS_URL,
-        width: 1280, height: 800, x: 40, y: 40,
-      });
-    }
+    // First launch — no auto-open, hub is the landing screen
   },
 
   _waitForTauri() {
@@ -507,7 +577,13 @@ const ChatWorkspace = {
     const title = inp?.value.trim() || this._selectedAgent.label;
     const agent = this._selectedAgent;
     this._closeDialog();
+
+    // ChatGPT URLs open in the system browser (can't embed) — notify user
+    const isChatGPT = agent.url && (agent.url.includes('chatgpt.com'));
     await this.openChat({ agentId: agent.id, title, colour: this._selectedColour, url: agent.url });
+    if (isChatGPT) {
+      this._toast(`${title} opened in your browser`);
+    }
   },
 
   _closeDialog() {
