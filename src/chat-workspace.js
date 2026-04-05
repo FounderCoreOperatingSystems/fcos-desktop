@@ -2,9 +2,13 @@
 'use strict';
 
 const CHAT_BOT_URL = 'https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder';
-const FCOS_URL     = 'https://www.fcosthinktank.site';
+const FCOS_URL     = 'https://www.fcosthinktank.site/products/';
 const STORAGE_KEY  = 'cw:windows:v4';
-const APP_VERSION  = '1.0.11';
+const APP_VERSION  = '1.0.13';
+
+const FCOS_BUILD_URL  = 'https://chatgpt.com/g/g-69d19d899fd081918138517c4f13d9d3-fcos-build';
+const FCOS_BRAINZ_URL = 'https://chatgpt.com/g/g-69d1532825148191bddb2435d94256a5-fcos-brainz';
+const IMG_BASE        = 'https://api.fcosthinktank.uk/products/landing';
 
 const AGENTS = [
   {
@@ -15,56 +19,62 @@ const AGENTS = [
     role:   'Orchestrator',
     desc:   'Full platform context, founder memory, orchestration. Your fused AI partner.',
     url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/main-symbiote.jpg`,
     status: 'live',
   },
   {
     id:     'code',
-    label:  'Code Assistant',
+    label:  'FCOS Build',
     icon:   '💻',
-    colour: '#3b82f6',
+    colour: '#22c55e',
     role:   'Specialist',
     desc:   'Deep coding intelligence — build pipeline, all 267 ops, P1-P8 framework.',
-    url:    CHAT_BOT_URL,
-    status: 'planned',
+    url:    FCOS_BUILD_URL,
+    image:  `${IMG_BASE}/build-symbiote.jpg`,
+    status: 'live',
   },
   {
     id:     'planner',
-    label:  'Build Planner',
-    icon:   '📋',
+    label:  'FCOS Brainz',
+    icon:   '🧠',
     colour: '#f97316',
     role:   'Specialist',
-    desc:   'Architecture decisions, job planning, spec writing, scope management.',
-    url:    CHAT_BOT_URL,
-    status: 'planned',
+    desc:   'Knowledge pack management, strategic intelligence, FCOS architecture.',
+    url:    FCOS_BRAINZ_URL,
+    image:  `${IMG_BASE}/brainz-symbiote.jpg`,
+    status: 'live',
   },
   {
     id:     'frontend',
     label:  'Front End',
     icon:   '🎨',
-    colour: '#a78bfa',
+    colour: '#a855f7',
     role:   'Specialist',
     desc:   'UI/UX, design system, component patterns, FCOS brand language.',
     url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/gaming-symbiote.jpg`,
     status: 'planned',
   },
   {
     id:     'business',
     label:  'Business Brain',
     icon:   '💼',
-    colour: '#10b981',
+    colour: '#eab308',
     role:   'Specialist',
     desc:   'Business model, market analysis, strategy, growth, monetisation.',
     url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/finance-symbiote.jpg`,
     status: 'planned',
   },
   {
     id:     'sprint',
     label:  'Sprint Tracker',
     icon:   '🏃',
-    colour: '#14b8a6',
+    colour: '#facc15',
     role:   'Specialist',
     desc:   'Tasks, progress, what\'s done, what\'s next. Keep the build moving.',
     url:    CHAT_BOT_URL,
+    image:  `${IMG_BASE}/thinktank-symbiote.jpg`,
     status: 'planned',
   },
   {
@@ -75,6 +85,7 @@ const AGENTS = [
     role:   'Specialist',
     desc:   'Your own specialist — name it, colour it, purpose it.',
     url:    CHAT_BOT_URL,
+    image:  null,
     status: 'custom',
   },
 ];
@@ -410,17 +421,20 @@ const ChatWorkspace = {
         ? '<span class="cw-badge cw-badge--orch">Orchestrator</span>'
         : '<span class="cw-badge">Specialist</span>';
       const statusBadge = a.status === 'live'
-        ? '<span class="cw-badge cw-badge--live">Live</span>'
-        : (a.status === 'planned' ? '<span class="cw-badge cw-badge--soon">Coming</span>' : '');
+        ? '<span class="cw-badge cw-badge--live">LIVE</span>'
+        : (a.status === 'planned' ? '<span class="cw-badge cw-badge--soon">KB coming</span>' : '');
       const selected = a.id === this._selectedAgent.id ? ' selected' : '';
       const wide = isOrch ? ' cw-agent--wide' : '';
+      const imgHtml = a.image
+        ? `<img src="${a.image}" alt="${a.label}" class="cw-agent-img" onerror="this.style.display='none'">`
+        : `<span class="cw-agent-icon">${a.icon}</span>`;
       return `
         <div class="cw-agent${selected}${wide}"
              style="--agent-colour:${a.colour}"
              data-agent-id="${a.id}"
              onclick="ChatWorkspace._selectAgent('${a.id}')">
           <div class="cw-agent-head">
-            <span class="cw-agent-icon">${a.icon}</span>
+            ${imgHtml}
             <div class="cw-agent-badges">${badge}${statusBadge}</div>
           </div>
           <div class="cw-agent-name">${a.label}</div>

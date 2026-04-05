@@ -261,6 +261,14 @@
   margin-bottom: 5px;
 }
 .cw-agent-icon { font-size: 1.1rem; }
+.cw-agent-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--agent-colour, #d4af37);
+}
 .cw-agent-badges { display: flex; gap: 4px; flex-wrap: wrap; }
 .cw-badge {
   font-size: 0.58rem;

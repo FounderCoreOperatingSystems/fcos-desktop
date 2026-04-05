@@ -1,9 +1,9 @@
 use tauri::Manager;
-use tauri_plugin_opener::OpenerExt;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::process::restart;
 use tauri_plugin_updater::UpdaterExt;
+use tauri_plugin_opener::OpenerExt;
 
 const CHATGPT_URL: &str =
     "https://chatgpt.com/g/g-69af0fb012108191a5078db17bb26419-fcos-master-agent-builder";
@@ -21,14 +21,11 @@ struct AppState {
     chat_windows: HashMap<String, ChatWindowMeta>,
 }
 
-// ── Commands (ALL async to avoid UI-thread deadlock on window creation) ───────
+// ── Commands (ALL async to avoid UI-thread deadlock — Tauri #4121) ────────────
 
 #[tauri::command]
 async fn open_chatgpt_window(app: tauri::AppHandle) -> Result<(), String> {
-    // ChatGPT doesn't render in WebView — open in system browser
-    app.opener()
-       .open_url(CHATGPT_URL, None::<&str>)
-       .map_err(|e| e.to_string())
+    app.opener().open_url(CHATGPT_URL, None::<&str>).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -44,25 +41,20 @@ async fn open_chat_window(
     width:  f64,
     height: f64,
 ) -> Result<(), String> {
-    let parsed_url: url::Url = url.parse().map_err(|e: url::ParseError| e.to_string())?;
-
-    // ChatGPT URLs → system browser (WebView renders blank/frozen)
-    if parsed_url.host_str() == Some("chatgpt.com") {
-        app.opener()
-           .open_url(parsed_url.as_str(), None::<&str>)
-           .map_err(|e| e.to_string())?;
-        let mut st = state.lock().map_err(|e| e.to_string())?;
-        st.chat_windows.insert(id.clone(), ChatWindowMeta { id, title, colour });
-        return Ok(());
-    }
-
     // Re-focus if already open
     if let Some(win) = app.get_webview_window(&id) {
         let _ = win.set_focus();
         return Ok(());
     }
 
-    // All other URLs → Tauri WebView window
+    let parsed_url: url::Url = url.parse().map_err(|e: url::ParseError| e.to_string())?;
+
+    // ChatGPT doesn't render in embedded WebView — open in system browser instead
+    let host = parsed_url.host_str().unwrap_or("");
+    if host == "chatgpt.com" || host.ends_with(".chatgpt.com") {
+        return app.opener().open_url(&url, None::<&str>).map_err(|e| e.to_string());
+    }
+
     tauri::WebviewWindowBuilder::new(&app, &id, tauri::WebviewUrl::External(parsed_url))
         .title(&title)
         .inner_size(width, height)
