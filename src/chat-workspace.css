@@ -1,9 +1,9 @@
 /* ── FCOS Symbiote Desktop — App Shell ─────────────────────────────────────── */
 :root {
-  --bg:       #060610;
-  --surface:  #0c0c1a;
-  --card:     #111122;
-  --sidebar:  #08081a;
+  --bg:       #000000;
+  --surface:  #0a0a0a;
+  --card:     #111111;
+  --sidebar:  #050505;
   --border:   rgba(212, 175, 55, 0.14);
   --gold:     #d4af37;
   --gold-dim: rgba(212, 175, 55, 0.12);

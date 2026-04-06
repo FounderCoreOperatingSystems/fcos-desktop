@@ -1,7 +1,7 @@
 /* ── FCOS Symbiote Desktop — App Shell ────────────────────────────────────── */
 'use strict';
 
-const APP_VERSION = '1.1.3';
+const APP_VERSION = '1.1.4';
 const MCP_BASE    = 'https://mcp.fcosthinktank.uk';
 const MCP_TOKEN   = 'd3126d53f66c2cf1b2ce6c4dcc5e900026c3e737af43978e';
 const IMG_BASE    = 'https://api.fcosthinktank.uk/products/landing';
