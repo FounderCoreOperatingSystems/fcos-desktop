@@ -1,7 +1,7 @@
 /* ── FCOS Symbiote Desktop — App Shell ────────────────────────────────────── */
 'use strict';
 
-const APP_VERSION = '1.1.1';
+const APP_VERSION = '1.1.2';
 const MCP_BASE    = 'https://mcp.fcosthinktank.uk';
 const MCP_TOKEN   = 'd3126d53f66c2cf1b2ce6c4dcc5e900026c3e737af43978e';
 const IMG_BASE    = 'https://api.fcosthinktank.uk/products/landing';
@@ -138,6 +138,8 @@ const App = {
       </div>
       <div class="sidebar-footer">
         <span class="sidebar-version">v${APP_VERSION}</span>
+        <button class="sidebar-refresh" onclick="location.reload()" title="Refresh app">↻</button>
+        ${this.ipc ? '<button class="sidebar-update" id="update-btn" onclick="App.checkUpdate()">Check for updates</button>' : ''}
         <span class="sidebar-status ${this.ipc?'ok':'err'}" id="ipc-status">${this.ipc?'Desktop':'Browser'}</span>
       </div>
     </div>`;
@@ -398,6 +400,21 @@ const App = {
     c.id = 'toast-container';
     c.className = 'toast-container';
     document.body.appendChild(c);
+  },
+
+  async checkUpdate() {
+    const btn = document.getElementById('update-btn');
+    if (!btn) return;
+    btn.textContent = 'Checking...';
+    btn.disabled = true;
+    try {
+      const msg = await this._invoke('check_for_updates');
+      btn.textContent = msg || 'Up to date';
+      setTimeout(() => { btn.textContent = 'Check for updates'; btn.disabled = false; }, 4000);
+    } catch (e) {
+      btn.textContent = 'Update failed';
+      setTimeout(() => { btn.textContent = 'Check for updates'; btn.disabled = false; }, 3000);
+    }
   },
 
   _toast(msg, isError) {
