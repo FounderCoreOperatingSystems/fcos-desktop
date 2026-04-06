@@ -1,7 +1,7 @@
 /* ── FCOS Symbiote Desktop — App Shell ────────────────────────────────────── */
 'use strict';
 
-const APP_VERSION = '1.1.2';
+const APP_VERSION = '1.1.3';
 const MCP_BASE    = 'https://mcp.fcosthinktank.uk';
 const MCP_TOKEN   = 'd3126d53f66c2cf1b2ce6c4dcc5e900026c3e737af43978e';
 const IMG_BASE    = 'https://api.fcosthinktank.uk/products/landing';
@@ -37,11 +37,11 @@ const AGENTS = [
 ];
 
 const TOOLS = [
-  { id:'brainz-tool', label:'Brainz', icon:'🧠', url:'https://app.fcosthinktank.uk/brainz/', colour:'#f97316' },
-  { id:'sprint-tool', label:'Sprint', icon:'🏃', url:'https://app.fcosthinktank.uk/sprint/', colour:'#facc15' },
-  { id:'synapse-tool', label:'Synapse', icon:'🔮', url:'https://app.fcosthinktank.uk/synapse/', colour:'#a78bfa' },
-  { id:'store-tool', label:'Store', icon:'🛒', url:'https://app.fcosthinktank.uk/store/', colour:'#3b82f6' },
-  { id:'media-tool', label:'Media', icon:'📸', url:'https://app.fcosthinktank.uk/media/', colour:'#ec4899' },
+  { id:'brainz-tool', label:'Brainz', image:`${IMG_BASE}/brainz-symbiote.jpg`, url:'https://app.fcosthinktank.uk/brainz/', colour:'#f97316' },
+  { id:'sprint-tool', label:'Sprint', image:`${IMG_BASE}/thinktank-symbiote.jpg`, url:'https://app.fcosthinktank.uk/sprint/', colour:'#facc15' },
+  { id:'synapse-tool', label:'Synapse', image:`${IMG_BASE}/music-symbiote.jpg`, url:'https://app.fcosthinktank.uk/synapse/', colour:'#a78bfa' },
+  { id:'store-tool', label:'Store', image:`${IMG_BASE}/social-symbiote.jpg`, url:'https://app.fcosthinktank.uk/store/', colour:'#3b82f6' },
+  { id:'media-tool', label:'Media', image:`${IMG_BASE}/media-symbiote.jpg`, url:'https://app.fcosthinktank.uk/media/', colour:'#ec4899' },
 ];
 
 // ── App ──────────────────────────────────────────────────────────────────────
@@ -107,17 +107,18 @@ const App = {
   },
 
   _sidebarHTML() {
-    const navItem = (id, icon, label, badge) => {
+    const navItem = (id, img, label, badge) => {
       const active = this.view === id ? ' active' : '';
       const b = badge ? `<span class="nav-badge">${badge}</span>` : '';
+      const icon = img ? `<img src="${img}" class="nav-img" onerror="this.style.display='none'">` : `<span class="nav-dot" style="background:var(--gold)"></span>`;
       return `<button class="nav-item${active}" onclick="App.navigate('${id}')">
-        <span class="nav-icon">${icon}</span><span class="nav-label">${label}</span>${b}</button>`;
+        ${icon}<span class="nav-label">${label}</span>${b}</button>`;
     };
 
     const toolItems = TOOLS.map(t => {
       const active = this.view === 'tool:' + t.id ? ' active' : '';
       return `<button class="nav-item${active}" onclick="App.navigate('tool:${t.id}')">
-        <span class="nav-icon">${t.icon}</span><span class="nav-label">${t.label}</span></button>`;
+        <img src="${t.image}" class="nav-img" onerror="this.style.display='none'"><span class="nav-label">${t.label}</span></button>`;
     }).join('');
 
     return `<div class="sidebar">
@@ -129,10 +130,10 @@ const App = {
         <div class="sidebar-sub">Founder OS</div>
       </div>
       <div class="sidebar-nav">
-        ${navItem('dashboard', '⚡', 'Dashboard')}
-        ${navItem('agents', '👥', 'Agents', AGENTS.filter(a=>a.status==='live').length)}
-        ${navItem('health', '💚', 'Health')}
-        ${navItem('audit', '📋', 'Audit Log')}
+        ${navItem('dashboard', IMG_BASE+'/main-symbiote.jpg', 'Dashboard')}
+        ${navItem('agents', IMG_BASE+'/symbiote-hero.jpg', 'Agents', AGENTS.filter(a=>a.status==='live').length)}
+        ${navItem('health', null, 'Health')}
+        ${navItem('audit', null, 'Audit Log')}
         <div class="nav-section">Tools</div>
         ${toolItems}
       </div>
@@ -182,22 +183,22 @@ const App = {
         <!-- Stats -->
         <div class="dash-grid">
           <div class="dash-card">
-            <div class="dash-card-header"><span class="dash-card-title">Live Agents</span><span class="dash-card-icon">⚡</span></div>
+            <div class="dash-card-header"><span class="dash-card-title">Live Agents</span></div>
             <div class="dash-card-value">${liveAgents.length}</div>
             <div class="dash-card-label">${AGENTS.length - liveAgents.length} planned</div>
           </div>
           <div class="dash-card">
-            <div class="dash-card-header"><span class="dash-card-title">MCP Tools</span><span class="dash-card-icon">🔧</span></div>
+            <div class="dash-card-header"><span class="dash-card-title">MCP Tools</span></div>
             <div class="dash-card-value" id="dash-tools">—</div>
             <div class="dash-card-label" id="dash-tools-label">checking...</div>
           </div>
           <div class="dash-card">
-            <div class="dash-card-header"><span class="dash-card-title">API Health</span><span class="dash-card-icon">💚</span></div>
+            <div class="dash-card-header"><span class="dash-card-title">API Health</span></div>
             <div class="dash-card-value" id="dash-health">—</div>
             <div class="dash-card-label" id="dash-health-label">checking...</div>
           </div>
           <div class="dash-card">
-            <div class="dash-card-header"><span class="dash-card-title">Platform</span><span class="dash-card-icon">📦</span></div>
+            <div class="dash-card-header"><span class="dash-card-title">Platform</span></div>
             <div class="dash-card-value">${TOOLS.length}</div>
             <div class="dash-card-label">embedded tools</div>
           </div>
