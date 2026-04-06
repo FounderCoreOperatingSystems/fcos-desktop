@@ -1,7 +1,7 @@
 /* ── FCOS Symbiote Desktop — App Shell ────────────────────────────────────── */
 'use strict';
 
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.1.1';
 const MCP_BASE    = 'https://mcp.fcosthinktank.uk';
 const MCP_TOKEN   = 'd3126d53f66c2cf1b2ce6c4dcc5e900026c3e737af43978e';
 const IMG_BASE    = 'https://api.fcosthinktank.uk/products/landing';
@@ -122,7 +122,10 @@ const App = {
 
     return `<div class="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo">FCOS Symbiote</div>
+        <div class="sidebar-brand">
+          <img src="https://api.fcosthinktank.uk/products/landing/fcos-logo-nav.png" class="sidebar-logo-img" onerror="this.style.display='none'" />
+          <div class="sidebar-logo">FCOS Symbiote</div>
+        </div>
         <div class="sidebar-sub">Founder OS</div>
       </div>
       <div class="sidebar-nav">
@@ -162,6 +165,19 @@ const App = {
         </div>
       </div>
       <div class="main-body">
+        <!-- Hero -->
+        <div class="dash-hero">
+          <div class="dash-hero-avatar-wrap">
+            <div class="dash-hero-ring"></div>
+            <img src="${IMG_BASE}/main-symbiote.jpg" class="dash-hero-avatar" onerror="this.style.display='none'" />
+          </div>
+          <div class="dash-hero-text">
+            <div class="dash-hero-title">FCOS Symbiote</div>
+            <div class="dash-hero-sub">Your AI operating system. A network of specialist agents, orchestrated for founders.</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
         <div class="dash-grid">
           <div class="dash-card">
             <div class="dash-card-header"><span class="dash-card-title">Live Agents</span><span class="dash-card-icon">⚡</span></div>
